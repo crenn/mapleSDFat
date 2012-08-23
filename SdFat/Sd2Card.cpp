@@ -21,10 +21,10 @@
  * Patched by Donald Delmar Davis <don@suspectdevices.com> fixing issues #1-3
  *
  */
-#include <WProgram.h>
+#include <wirish/WProgram.h>
 #include "Sd2Card.h"
-#include "HardwareSPI.h"
-#include "spi.h"
+#include <wirish/HardwareSPI.h>
+#include <libmaple/spi.h>
 
 //------------------------------------------------------------------------------
 // send command and return error code.  Return zero for OK

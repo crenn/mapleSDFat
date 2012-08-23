@@ -25,7 +25,7 @@
  */
 #include "Sd2PinMap.h"
 #include "SdInfo.h"
-#include "HardwareSPI.h"
+#include <wirish/HardwareSPI.h>
 
 /** Set SCK to max rate of F_CPU/2. See Sd2Card::setSckRate(). */
 uint8_t const SPI_FULL_SPEED = 0;

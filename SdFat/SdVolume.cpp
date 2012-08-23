@@ -18,7 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include "SdFat.h"
-#include <usb_serial.h>
+#include <libmaple/usb_serial.h>
 
 //------------------------------------------------------------------------------
 // raw block cache
