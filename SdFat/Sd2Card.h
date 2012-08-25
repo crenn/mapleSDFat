@@ -28,11 +28,18 @@
 #include <wirish/HardwareSPI.h>
 
 /** Set SCK to max rate of F_CPU/2. See Sd2Card::setSckRate(). */
-uint8_t const SPI_FULL_SPEED = 0;
+SPIFrequency const SPI_FULL_SPEED = SPI_18MHZ;
 /** Set SCK rate to F_CPU/4. See Sd2Card::setSckRate(). */
-uint8_t const SPI_HALF_SPEED = 1;
+SPIFrequency const SPI_HALF_SPEED = SPI_9MHZ;
 /** Set SCK rate to F_CPU/8. Sd2Card::setSckRate(). */
-uint8_t const SPI_QUARTER_SPEED = 2;
+SPIFrequency const SPI_QUARTER_SPEED = SPI_4_5MHZ;
+
+/* Set SCK to max rate of F_CPU/2. See Sd2Card::setSckRate().
+uint8_t const SPI_FULL_SPEED = 0;
+ Set SCK rate to F_CPU/4. See Sd2Card::setSckRate().
+uint8_t const SPI_HALF_SPEED = 1;
+ Set SCK rate to F_CPU/8. Sd2Card::setSckRate().
+uint8_t const SPI_QUARTER_SPEED = 2;*/
 //------------------------------------------------------------------------------
 /** Protect block zero from write if nonzero */
 #define SD_PROTECT_BLOCK_ZERO 1
@@ -108,7 +115,7 @@ int8_t const USE_NSS_PIN = -1;
 class Sd2Card {
  public:
   /** Construct an instance of Sd2Card. */
-  Sd2Card(HardwareSPI &s, int8_t pin = USE_NSS_PIN, bool autoSetup = false);
+  Sd2Card(HardwareSPI &s, bool autoSetup = false);
   uint32_t cardSize(void);
   uint8_t erase(uint32_t firstBlock, uint32_t lastBlock);
   uint8_t eraseSingleBlockEnable(void);
@@ -118,20 +125,13 @@ class Sd2Card {
   uint8_t errorCode(void) const {return errorCode_;}
   /** \return error data for last error. */
   uint8_t errorData(void) const {return status_;}
-  /**
-   * Initialize an SD flash memory card with default clock rate and chip
-   * select pin.  See sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin).
-   */
-  uint8_t init(void) {
-    return init(SPI_FULL_SPEED);
-  }
 
   /**
    * Initialize an SD flash memory card with the selected SPI clock rate
    * and the default SD chip select pin.
    * See sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin).
    */
-  uint8_t init(uint8_t sckRateID, uint8_t chipSelectPin = USE_NSS_PIN);
+  uint8_t init(SPIFrequency sckRateID = SPI_QUARTER_SPEED, int8_t chipSelectPin = USE_NSS_PIN);
 
   void partialBlockRead(uint8_t value);
   /** Returns the current value, true or false, for partial block read. */
