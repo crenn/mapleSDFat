@@ -147,13 +147,11 @@ uint8_t Sd2Card::eraseSingleBlockEnable(void)
   return readCSD(&csd) ? csd.v1.erase_blk_en : 0;
 }
 //------------------------------------------------------------------------------
-Sd2Card::Sd2Card(HardwareSPI &s, int8_t pin, bool autoSetup) : SPIn(s),
-            errorCode_(0), inBlock_(0), partialBlockRead_(0), type_(0) {
-  if (pin == USE_NSS_PIN) {
-    pin = SPIn.nssPin();
-  }
-  CSpin = pin;
-
+Sd2Card::Sd2Card(HardwareSPI &s, bool autoSetup) : SPIn(s) {
+  errorCode_ = 0;
+  inBlock_ = 0;
+  partialBlockRead_ = 0;
+  type_ = 0;
   setup = autoSetup;
 }
 
@@ -168,7 +166,7 @@ Sd2Card::Sd2Card(HardwareSPI &s, int8_t pin, bool autoSetup) : SPIn(s),
  * the value zero, false, is returned for failure.  The reason for failure
  * can be determined by calling errorCode() and errorData().
  */
-uint8_t Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
+uint8_t Sd2Card::init(SPIFrequency sckRateID, int8_t chipSelectPin) {
   errorCode_ = inBlock_ = partialBlockRead_ = type_ = 0;
   // 16-bit init start time allows over a minute
 
@@ -177,8 +175,12 @@ uint8_t Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
 
   if (setup == true) {
     SPIn.end();
-    SPIn.begin(SPI_1_125MHZ, MSBFIRST, 0);
+    SPIn.begin(sckRateID, MSBFIRST, 0);
   }
+  if (chipSelectPin == USE_NSS_PIN) {
+    chipSelectPin = SPIn.nssPin();
+  }
+  CSpin = chipSelectPin;
   pinMode(CSpin, OUTPUT);
 
   // must supply min of 74 clock cycles with CS high.
